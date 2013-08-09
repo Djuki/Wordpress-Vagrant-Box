@@ -1,4 +1,13 @@
 class bitnamistack {
+
+    $install_file = "bitnami-lampstack-1.2-5-linux-installer.run"
+
+    $downloadi_nstall_path = "http://bitnami.org/files/download/$bitnamistack::install_file"
+
+    $stack_full_path = "/home/vagrant/lampstack"
+
+
+
     file { 'answer_file':
         path => '/tmp/answer_file',
         ensure => present,
@@ -7,22 +16,22 @@ class bitnamistack {
 
     exec {
         "bitnami-lampstack":
-        command => "wget -P /home/vagrant http://bitnami.org/files/download/bitnami-lampstack-1.2-5-linux-installer.run",
-        creates => "/home/vagrant/bitnami-lampstack-1.2-5-linux-installer.run",
+        command => "wget -P /home/vagrant $bitnamistack::download_install_path",
+        creates => "/home/vagrant/$bitnamistack::install_file",
         subscribe => File['answer_file']
     }
 
     exec {
         "make-executable":
-        command => "chmod +x /home/vagrant/bitnami-lampstack-1.2-5-linux-installer.run",
+        command => "chmod +x /home/vagrant/$bitnamistack::install_file",
         subscribe => Exec['bitnami-lampstack']
     }
 
     exec {
         "install":
-        command => "/home/vagrant/bitnami-lampstack-1.2-5-linux-installer.run --optionfile /tmp/answer_file",
+        command => "/home/vagrant/$bitnamistack::install_file --optionfile /tmp/answer_file",
         subscribe => Exec['make-executable'],
-        creates => "/home/vagrant/lampstack/ctlscript.sh"
+        creates => "$bitnamistack::stack_full_path/ctlscript.sh"
     }
 
     exec { "stop-lamp":
