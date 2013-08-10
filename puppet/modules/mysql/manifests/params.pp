@@ -1,7 +1,7 @@
 class mysql::params {
     $database = "wpgame"
     $dbuser = "root"
-    $dbuserpass = ""
+    $dbuserpass = "avanti"
     $host = "localhost"
     $db_charset = "utf8"
     $db_collate = ""
