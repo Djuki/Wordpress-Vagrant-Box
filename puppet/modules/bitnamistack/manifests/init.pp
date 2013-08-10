@@ -1,37 +1,37 @@
-class bitnamistack {
+class bitnamistack inherits bitnamistack::params {
 
-    $install_file = "bitnami-lampstack-1.2-5-linux-installer.run"
+    include mysql::params
 
-    $downloadi_nstall_path = "http://bitnami.org/files/download/$bitnamistack::install_file"
-
-    $stack_full_path = "/home/vagrant/lampstack"
-
-
+    # template vars
+    $stack_full_path = $bitnamistack::params::stack_full_path
+    $dbuserpass = $mysql::params::dbuserpass
 
     file { 'answer_file':
         path => '/tmp/answer_file',
         ensure => present,
-        source => '/vagrant/install/answer_file',
+        content => template('bitnamistack/answer_file.erb'),
     }
 
     exec {
         "bitnami-lampstack":
-        command => "wget -P /home/vagrant $bitnamistack::download_install_path",
-        creates => "/home/vagrant/$bitnamistack::install_file",
+        command => "wget -P /home/vagrant $bitnamistack::params::download_install_path",
+        creates => "/home/vagrant/$bitnamistack::params::install_file",
         subscribe => File['answer_file']
     }
 
     exec {
         "make-executable":
-        command => "chmod +x /home/vagrant/$bitnamistack::install_file",
+        command => "chmod +x /home/vagrant/$bitnamistack::params::install_file",
         subscribe => Exec['bitnami-lampstack']
     }
 
     exec {
         "install":
-        command => "/home/vagrant/$bitnamistack::install_file --optionfile /tmp/answer_file",
+        command => "/home/vagrant/$bitnamistack::params::install_file --optionfile /tmp/answer_file",
         subscribe => Exec['make-executable'],
-        creates => "$bitnamistack::stack_full_path/ctlscript.sh"
+        creates => "$bitnamistack::params::stack_full_path/ctlscript.sh",
+        logoutput => "on_failure",
+        timeout     => 6800,
     }
 
     exec { "stop-lamp":
@@ -40,14 +40,23 @@ class bitnamistack {
     }
 
     file { "phpmyadmin-conf":
-        path => "/home/vagrant/lampstack/apps/phpmyadmin/conf/phpmyadmin.conf",
-        source => "/vagrant/modules/bitnamistack/templates/phpmyadmin.conf",
+        path => "$bitnamistack::params::stack_full_path/apps/phpmyadmin/conf/phpmyadmin.conf",
+        content => template('bitnamistack/phpmyadmin.conf.erb'),
         subscribe => Exec['stop-lamp']
     }
+
+    file { "httpd-conf":
+        path => "$bitnamistack::params::stack_full_path/apache2/conf/httpd.conf",
+        content => template('bitnamistack/httpd.conf.erb'),
+        subscribe => Exec['stop-lamp']
+    }
+
 
     exec {
         "start-up":
         command => "/home/vagrant/lampstack/ctlscript.sh start",
-        subscribe => File['phpmyadmin-conf']
+        subscribe => File['phpmyadmin-conf'],
     }
+
+
 }

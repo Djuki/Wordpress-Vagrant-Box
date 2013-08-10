@@ -1,20 +1,20 @@
 class wordpress::params {
 
-  ### WebApp specific parameters
-  $install = 'package'
-  $install_source = 'http://wordpress.org/latest.zip'
-  $install_dirname = 'wordpress'
-  $install_precommand = ''
-  $install_postcommand = ''
-  $url_check = ''
-  $url_pattern = 'wordpress'
-  $web_server = 'apache'
-  $web_server_template = ''
-  $web_virtualhost = "$::fqdn"
-  $db_type = 'mysql'
-  $db_host = 'localhost'
-  $db_name = 'wordpress'
-  $db_user = 'wordpress'
-  $db_password = fqdn_rand(100000000000)
+    require bitnamistack
+    include mysql::params
 
+    ### Wordpress specific parameters
+    $install_dirname = "wordpress"
+    $blog_name = "My first vagrant blog"
+    $database = "$mysql::params::database"
+    $dbuser = "$mysql::params::dbuser"
+    $dbuserpass = "$mysql::params::dbuserpass"
+    $host = "$mysql::params::host"
+    $db_charset = "$mysql::params::db_charset"
+    $db_collate = "$mysql::params::db_collate"
+    $db_table_prefix = "$mysql::params::db_table_prefix"
+    $admin_email = "djuki@mail.com"
+    $admin_password = 'avantime'
+    $blog_public = "true"
+    $stack_full_path = "$bitnamistack::params::stack_full_path"
 }

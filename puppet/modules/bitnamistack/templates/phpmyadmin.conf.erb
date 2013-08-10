@@ -1,0 +1,8 @@
+Alias /phpmyadmin "<%=stack_full_path%>/apps/phpmyadmin/htdocs"
+
+<Directory "<%=stack_full_path%>/apps/phpmyadmin/htdocs">
+    Order allow,deny
+    Allow from All
+    Satisfy all
+    ErrorDocument 403 "Page don't exists"
+</Directory>
