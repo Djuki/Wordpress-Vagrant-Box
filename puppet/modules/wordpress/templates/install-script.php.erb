@@ -1,0 +1,26 @@
+<?php
+
+define('ABSPATH', "/home/vagrant/<%=@install_dirname%>/");
+define('WP_SITEURL', "http://33.33.33.111/");
+
+define('WP_CONTENT_DIR', 'wp-content/');
+define('WPINC', 'wp-includes');
+define( 'WP_LANG_DIR', WP_CONTENT_DIR . '/languages' );
+
+define('WP_USE_THEMES', true);
+define('DB_NAME', "<%=@database%>");
+define('DB_USER', "<%=@dbuser%>");
+define('DB_PASSWORD', "<%=@dbuserpass%>");
+define('DB_HOST', "<%=@host%>");
+
+$_GET['step'] = 2;
+$_POST['weblog_title'] = "<%=@blog_name%>";
+$_POST['user_name'] = "admin";
+$_POST['admin_email'] = "<%=@admin_email%>";
+$_POST['blog_public'] = <%=@blog_public%>;
+$_POST['admin_password'] = "<%=@admin_password%>";
+$_POST['admin_password2'] = "<%=@admin_password%>";
+
+require_once(ABSPATH . 'wp-admin/install.php');
+require_once(ABSPATH . WPINC . '/class-wp-walker.php');
+require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

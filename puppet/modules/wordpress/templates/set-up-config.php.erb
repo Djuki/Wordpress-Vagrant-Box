@@ -1,0 +1,54 @@
+<?php
+$configFileSample= "/home/vagrant/<%=@install_dirname%>/wp-config-sample.php";
+$configFileOriginal = "/home/vagrant/<%=@install_dirname%>/wp-config.php";
+
+
+$databaseName = "<%=@database%>";
+$dbUsername = "<%=@dbuser%>";
+$dbPassword = "<%=@dbuserpass%>";
+$dbHost = "<%=@host%>";
+$dbCharset = "<%=@db_charset%>";
+$dbCollate = "<%=@db_collate%>";
+$dbTablePrefix = "<%=@db_table_prefix%>";
+
+$configContent = file($configFileSample);
+
+
+
+$configContent = str_replace("database_name_here", $databaseName, $configContent);
+$configContent = str_replace("username_here", $dbUsername, $configContent);
+$configContent = str_replace("password_here", $dbPassword, $configContent);
+$configContent = str_replace("localhost", $dbHost, $configContent);
+$configContent = str_replace("utf8", $dbCharset, $configContent);
+$configContent = str_replace("'DB_COLLATE', ''", "'DB_COLLATE', '$dbCollate'", $configContent);
+$configContent = str_replace("\$table_prefix  = 'wp_';", "\$table_prefix  = '$dbTablePrefix';", $configContent);
+
+
+$secret_keys = file_get_contents( 'https://api.wordpress.org/secret-key/1.1/salt/' );
+$secret_keys = explode( "\n", $secret_keys );
+foreach ( $secret_keys as $k => $v ) {
+    $secret_keys[$k] = substr( $v, 28, 64 );
+}
+array_pop($secret_keys);
+
+
+$configContent = str_replace("'AUTH_KEY',         'put your unique phrase here'", "'AUTH_KEY',         '{$secret_keys[0]}'", $configContent);
+$configContent = str_replace("'SECURE_AUTH_KEY',  'put your unique phrase here'", "'SECURE_AUTH_KEY',  '{$secret_keys[1]}'", $configContent);
+$configContent = str_replace("'LOGGED_IN_KEY',    'put your unique phrase here'", "'LOGGED_IN_KEY',    '{$secret_keys[2]}'", $configContent);
+$configContent = str_replace("'NONCE_KEY',        'put your unique phrase here'", "'NONCE_KEY',        '{$secret_keys[3]}'", $configContent);
+$configContent = str_replace("'AUTH_SALT',        'put your unique phrase here'", "'AUTH_SALT',        '{$secret_keys[4]}'", $configContent);
+$configContent = str_replace("'SECURE_AUTH_SALT', 'put your unique phrase here'", "'SECURE_AUTH_SALT', '{$secret_keys[5]}'", $configContent);
+$configContent = str_replace("'LOGGED_IN_SALT',   'put your unique phrase here'", "'LOGGED_IN_SALT',   '{$secret_keys[6]}'", $configContent);
+$configContent = str_replace("'NONCE_SALT',       'put your unique phrase here'", "'NONCE_SALT',       '{$secret_keys[7]}'", $configContent);
+
+if(file_exists($configFileOriginal)) {
+    unlink($configFileOriginal);
+}
+
+$fw = fopen($configFileOriginal, "a");
+
+foreach ( $configContent as $line_num => $line ) {
+    fwrite($fw, $line);
+}
+
+fclose($fw);
