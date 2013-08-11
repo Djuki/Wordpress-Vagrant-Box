@@ -16,10 +16,11 @@ class wordpress {
     }
 
     exec {"unzip":
-        command => "tar -xzvf /home/vagrant/latest.tar.gz -C /home/vagrant/$wordpress::params::install_dirname --strip=1",
+        command => "/bin/tar -xzvf /home/vagrant/latest.tar.gz -C /home/vagrant/$wordpress::params::install_dirname --strip=1",
         creates => "/home/vagrant/$wordpress::params::install_dirname/wp-includes",
         subscribe => Exec['create-destination'],
         timeout     => 10800000,
+        returns => [0,2],
     }
 
 }

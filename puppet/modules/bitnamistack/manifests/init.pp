@@ -32,6 +32,7 @@ class bitnamistack inherits bitnamistack::params {
         creates => "$bitnamistack::params::stack_full_path/ctlscript.sh",
         logoutput => "on_failure",
         timeout     => 6800,
+        returns => [0,1],
     }
 
     exec { "stop-lamp":
