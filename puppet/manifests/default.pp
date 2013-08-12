@@ -9,3 +9,5 @@ include bitnamistack
 include wordpress
 
 include mysql
+
+include other
