@@ -4,7 +4,7 @@ class wordpress::params {
     include mysql::params
 
     ### Wordpress specific parameters
-    $install_dirname = "wordpress"
+    $install_dirname = "www/wordpress"
     $blog_name = "My first vagrant blog"
     $database = "$mysql::params::database"
     $dbuser = "$mysql::params::dbuser"

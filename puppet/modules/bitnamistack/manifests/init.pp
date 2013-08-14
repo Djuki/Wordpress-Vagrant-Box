@@ -1,10 +1,13 @@
 class bitnamistack inherits bitnamistack::params {
 
     include mysql::params
+    include wordpress::params
 
     # template vars
     $stack_full_path = $bitnamistack::params::stack_full_path
     $dbuserpass = $mysql::params::dbuserpass
+    $wp_install_dirname = $wordpress::params::install_dirname
+
 
     file { 'answer_file':
         path => '/tmp/answer_file',
@@ -43,13 +46,15 @@ class bitnamistack inherits bitnamistack::params {
     file { "phpmyadmin-conf":
         path => "$bitnamistack::params::stack_full_path/apps/phpmyadmin/conf/phpmyadmin.conf",
         content => template('bitnamistack/phpmyadmin.conf.erb'),
-        subscribe => Exec['stop-lamp']
+        subscribe => Exec['stop-lamp'],
+        ensure => present
     }
 
     file { "httpd-conf":
         path => "$bitnamistack::params::stack_full_path/apache2/conf/httpd.conf",
         content => template('bitnamistack/httpd.conf.erb'),
-        subscribe => Exec['stop-lamp']
+        subscribe => Exec['stop-lamp'],
+        ensure => present
     }
 
 
